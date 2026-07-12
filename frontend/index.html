@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insurance Call Center</title>
+<style>
+  :root {
+    --bg:             #F6F7F8;
+    --surface:        #FFFFFF;
+    --surface-sunken: #F1F2F4;
+    --border:         #E3E5E8;
+    --text:           #26282B;
+    --text-muted:     #8A8F98;
+    --accent:         #3A6FF7;
+    --accent-soft:    #EAF0FE;
+    --success:        #2FA86B;
+    --success-soft:   #E7F5EE;
+    --warning:        #D79A1F;
+    --warning-soft:   #FAF3E2;
+    --danger:         #E0554A;
+    --danger-soft:    #FCEBEA;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Inter, sans-serif;
+    font-size: 15px; line-height: 1.5;
+    background: var(--bg); color: var(--text);
+    height: 100vh; display: flex; flex-direction: column;
+  }
+
+  /* ---- top bar ---- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  header .brand { font-weight: 600; }
+  header .meta { display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 13px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    background: var(--surface-sunken); color: var(--text-muted);
+  }
+  .pill.live { background: var(--success-soft); color: var(--success); }
+  .pill.warn { background: var(--warning-soft); color: var(--warning); }
+  .pill.down { background: var(--danger-soft); color: var(--danger); }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* ---- layout ---- */
+  main { flex: 1; display: flex; gap: 16px; padding: 16px 24px; min-height: 0; max-width: 1360px; width: 100%; margin: 0 auto; }
+  .transcript-col { flex: 1.6; display: flex; flex-direction: column; min-width: 0; }
+
+  /* ---- history sidebar ---- */
+  .sidebar-col { width: 232px; flex-shrink: 0; display: flex; flex-direction: column; min-height: 0; }
+  .sidebar-col .card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  #new-chat { width: 100%; margin-bottom: 12px; background: var(--accent); color: #fff; }
+  #session-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .sess { padding: 8px 10px; border-radius: 10px; cursor: pointer; border: 1px solid transparent; }
+  .sess:hover { background: var(--surface-sunken); }
+  .sess.active { background: var(--accent-soft); border-color: var(--accent); }
+  .sess .preview { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sess .sub { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+  .sess .sub .live-dot { color: var(--success); font-weight: 600; }
+  #session-list .none { color: var(--text-muted); font-size: 13px; padding: 6px 4px; }
+  .rail-col { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 280px; max-width: 380px; overflow-y: auto; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px;
+  }
+  .card h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 12px; }
+
+  /* ---- transcript ---- */
+  #transcript {
+    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+  }
+  .bubble { max-width: 78%; padding: 10px 14px; border-radius: 14px; }
+  .bubble.user { align-self: flex-end; background: var(--accent-soft); border-bottom-right-radius: 4px; }
+  .bubble.agent { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .agent-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin: 0 0 2px 6px; align-self: flex-start; text-transform: capitalize; }
+  .banner {
+    align-self: center; font-size: 12.5px; padding: 4px 14px; border-radius: 999px;
+    background: var(--surface-sunken); color: var(--text-muted);
+  }
+  .banner.danger { background: var(--danger-soft); color: var(--danger); }
+  .empty-hint { margin: auto; text-align: center; color: var(--text-muted); }
+  .empty-hint .big { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+
+  /* ---- activity log ---- */
+  #activity { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; font-size: 13px; }
+  #activity .row { display: flex; gap: 8px; color: var(--text-muted); }
+  #activity .row .t { flex-shrink: 0; font-variant-numeric: tabular-nums; opacity: .7; }
+  #activity .row.ok { color: var(--success); }
+  #activity .row.warn { color: var(--warning); }
+  #activity .row.err { color: var(--danger); }
+
+  .btn {
+    border: none; border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+
+  /* ---- login overlay ---- */
+  #login-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(38, 40, 43, .45); backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  #login-overlay.hidden { display: none; }
+  #login-card {
+    background: var(--surface); border-radius: 16px; padding: 28px;
+    width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,.18);
+  }
+  #login-card h2 { font-size: 18px; margin-bottom: 4px; }
+  #login-card .sub { color: var(--text-muted); font-size: 13.5px; margin-bottom: 18px; }
+  #login-card label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 10px 0 4px; }
+  #login-card input {
+    width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--surface-sunken); font-size: 14px; outline: none; color: var(--text);
+  }
+  #login-card input:focus { border-color: var(--accent); background: var(--surface); }
+  #login-btn { width: 100%; margin-top: 18px; background: var(--accent); color: #fff; }
+  #login-error { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 18px; }
+  #logout { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 4px 14px; font-size: 13px; }
+
+  /* ---- bottom bar ---- */
+  footer {
+    display: flex; align-items: center; gap: 12px; justify-content: center;
+    padding: 14px 24px; background: var(--surface); border-top: 1px solid var(--border);
+  }
+  #composer { display: flex; gap: 10px; width: 100%; max-width: 760px; align-items: center; }
+  #msg {
+    flex: 1; padding: 11px 18px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface-sunken); font-size: 15px; outline: none; color: var(--text);
+  }
+  #msg:focus { border-color: var(--accent); background: var(--surface); }
+  #send { background: var(--accent); color: #fff; }
+  #mic {
+    width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); cursor: pointer; font-size: 19px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #mic[disabled] { opacity: .45; cursor: not-allowed; }
+  #mic.recording { background: var(--danger); border-color: var(--danger); animation: micpulse 1.2s ease infinite; }
+  #mic.busy { background: var(--warning-soft); border-color: var(--warning); }
+  @keyframes micpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(224,85,74,.4); } 50% { box-shadow: 0 0 0 10px rgba(224,85,74,0); } }
+  #speaker {
+    width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); cursor: pointer; font-size: 19px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; opacity: .55;
+  }
+  #speaker.on { opacity: 1; background: var(--accent-soft); border-color: var(--accent); }
+  #end { background: transparent; color: var(--danger); border: 1.5px solid var(--danger); }
+  #restart { display: none; background: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="brand">Insurance Call Center</span>
+  <div class="meta">
+    <span class="pill" id="user-pill" style="display:none"><span id="user-label"></span></span>
+    <span id="session-label">no session</span>
+    <span class="pill warn" id="conn-pill"><span class="dot"></span><span id="conn-text">Connecting…</span></span>
+    <button class="btn" id="logout" style="display:none">Log out</button>
+  </div>
+</header>
+
+<div id="login-overlay">
+  <div id="login-card">
+    <h2>Sign in</h2>
+    <div class="sub">Log in to talk to your insurance assistant</div>
+    <label for="login-user">User ID</label>
+    <input id="login-user" autocomplete="username" placeholder="e.g. Bibek">
+    <label for="login-pass">Password</label>
+    <input id="login-pass" type="password" autocomplete="current-password">
+    <button class="btn" id="login-btn">Log in</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<main>
+  <div class="sidebar-col">
+    <div class="card">
+      <button class="btn" id="new-chat">＋ New call</button>
+      <h3>Conversations</h3>
+      <div id="session-list"><div class="none">No conversations yet</div></div>
+    </div>
+  </div>
+
+  <div class="transcript-col">
+    <div id="transcript">
+      <div class="empty-hint" id="empty-hint">
+        <div class="big">Hi, I'm your insurance assistant</div>
+        <div>Ask about your policy, billing, network hospitals — or file a claim.<br>
+        Try: “What's my billing status?” — I already know your policies</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rail-col">
+    <div class="card">
+      <h3>Activity</h3>
+      <div id="activity"><div class="row"><span>Waiting for activity…</span></div></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div id="composer">
+    <button id="mic" title="Click to talk, click again to stop">🎤</button>
+    <button id="speaker" title="Speak agent replies aloud (ElevenLabs TTS)">🔊</button>
+    <input id="msg" placeholder="Type your message, or use the mic…" autocomplete="off">
+    <button class="btn" id="send">Send</button>
+    <button class="btn" id="end">End</button>
+    <button class="btn" id="restart">Start new call</button>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  // The UI is a standalone client: when served by its own process (any port
+  // other than the backend's), talk to the backend at :8000 on the same host.
+  // Override with ?api=http://host:port. Served by the backend itself, this
+  // collapses to same-origin.
+  const API_BASE =
+    new URLSearchParams(location.search).get("api") ||
+    (location.port === "8000" ? location.origin : `${location.protocol}//${location.hostname}:8000`);
+  const WS_BASE = API_BASE.replace(/^http/, "ws");
+
+  // Caller identity comes from login: /api/auth/login returns
+  // {access_token, user_id, user_data}; we keep it in localStorage and
+  // send the token as a Bearer header so the backend binds sessions to
+  // the verified user (and agents can fetch the profile via tools).
+  let AUTH = null;
+  try { AUTH = JSON.parse(localStorage.getItem("ivcc_auth")); } catch { /* corrupted - relogin */ }
+  // Validate the stored token's expiry on load - an expired token must show
+  // the login dialog immediately, not fail silently on first send.
+  if (AUTH) {
+    try {
+      const claims = JSON.parse(atob(AUTH.access_token.split(".")[0].replace(/-/g, "+").replace(/_/g, "/")));
+      if ((claims.exp || 0) * 1000 < Date.now()) AUTH = null;
+    } catch { AUTH = null; }
+    if (!AUTH) localStorage.removeItem("ivcc_auth");
+  }
+
+  const authHeaders = () => (AUTH ? { Authorization: `Bearer ${AUTH.access_token}` } : {});
+
+  const applyAuthUi = () => {
+    const loggedIn = !!AUTH;
+    $("login-overlay").classList.toggle("hidden", loggedIn);
+    $("user-pill").style.display = loggedIn ? "" : "none";
+    $("logout").style.display = loggedIn ? "" : "none";
+    if (loggedIn) $("user-label").textContent = (AUTH.user_data?.name || AUTH.user_id);
+    if (!loggedIn) setTimeout(() => $("login-user").focus(), 50);
+  };
+
+  const doLogin = async () => {
+    const user_id = $("login-user").value.trim();
+    const password = $("login-pass").value;
+    if (!user_id || !password) { $("login-error").textContent = "Enter your user id and password"; return; }
+    $("login-error").textContent = "";
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id, password }),
+      });
+    } catch { $("login-error").textContent = "Cannot reach the backend"; return; }
+    if (!res.ok) {
+      $("login-error").textContent = res.status === 401 ? "Invalid user id or password" : `Login failed (${res.status})`;
+      return;
+    }
+    AUTH = await res.json();
+    localStorage.setItem("ivcc_auth", JSON.stringify(AUTH));
+    $("login-pass").value = "";
+    applyAuthUi();
+    refreshSessions();
+  };
+
+  const doLogout = () => {
+    AUTH = null;
+    localStorage.removeItem("ivcc_auth");
+    resetView();
+    $("session-list").innerHTML = '<div class="none">No conversations yet</div>';
+    applyAuthUi();
+  };
+
+  const state = { sessionId: null, ws: null, currentAgent: "triage", toolRows: {} };
+
+  // ---------- helpers ----------
+  const setConn = (cls, text) => {
+    $("conn-pill").className = "pill " + cls;
+    $("conn-text").textContent = text;
+  };
+  const timeNow = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+  const scrollBottom = () => {
+    const el = $("transcript");
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    if (nearBottom) el.scrollTop = el.scrollHeight;
+  };
+
+  const addBubble = (role, agentName, content) => {
+    $("empty-hint")?.remove();
+    const wrap = $("transcript");
+    if (role === "agent" && agentName) {
+      const label = document.createElement("div");
+      label.className = "agent-label";
+      label.textContent = agentName + " agent";
+      wrap.appendChild(label);
+    }
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + (role === "user" ? "user" : "agent");
+    bubble.textContent = content;
+    wrap.appendChild(bubble);
+    scrollBottom();
+  };
+
+  const addBanner = (text, danger = false) => {
+    $("empty-hint")?.remove();
+    const banner = document.createElement("div");
+    banner.className = "banner" + (danger ? " danger" : "");
+    banner.textContent = text;
+    $("transcript").appendChild(banner);
+    scrollBottom();
+  };
+
+  const setAgent = (name) => { state.currentAgent = name; };
+
+  const logActivity = (key, text, cls = "") => {
+    const box = $("activity");
+    if (box.firstChild?.textContent?.startsWith("Waiting")) box.innerHTML = "";
+    let row = key && state.toolRows[key];
+    if (!row) {
+      row = document.createElement("div");
+      row.innerHTML = `<span class="t">${timeNow()}</span><span class="m"></span>`;
+      box.appendChild(row);
+      if (key) state.toolRows[key] = row;
+    }
+    row.className = "row " + cls;
+    row.querySelector(".m").textContent = text;
+    box.scrollTop = box.scrollHeight;
+  };
+
+  const prettyTool = (name) => name.replaceAll("_", " ");
+
+  // ---------- event handling ----------
+  const handlers = {
+    connection_ack: (d) => { setConn("live", "Live"); setAgent(d.current_agent); },
+    turn_created: (d) => {
+      if (d.role === "user") { setAgent(state.currentAgent, true); addBubble("user", null, d.content); }
+      else {
+        setAgent(d.agent_name || state.currentAgent, false);
+        addBubble("agent", d.agent_name, d.content);
+        if (state.speakNextReply || state.voiceReplies) { state.speakNextReply = false; speak(d.content); }
+      }
+    },
+    agent_handoff: (d) => { setAgent(d.to_agent, true); addBanner(`Handed off: ${d.from_agent} → ${d.to_agent}`); },
+    tool_call_started: (d) => logActivity(d.invocation_id, `${prettyTool(d.tool_name)}… (attempt ${d.attempt})`),
+    tool_call_succeeded: (d) => logActivity(d.invocation_id, `✓ ${prettyTool(d.tool_name)} (${d.latency_ms} ms)`, "ok"),
+    tool_call_failed: (d) => logActivity(d.invocation_id,
+      d.will_retry ? `⚠ ${prettyTool(d.tool_name)} failed — retrying (${d.attempt})` : `✗ ${prettyTool(d.tool_name)} failed`,
+      d.will_retry ? "warn" : "err"),
+    tool_exhausted: (d) => { logActivity(d.invocation_id, `✗ ${prettyTool(d.tool_name)} gave up`, "err"); addBanner("Tool unavailable — escalating", true); },
+    drift_detected: (d) => addBanner(`Guardrail: ${d.kind.replaceAll("_", " ")} → ${d.action}`, true),
+    approval_required: () => {
+      addBanner("⏳ Claim sent for human review — a reviewer will decide shortly");
+      logActivity(null, "Claim queued for human review", "warn");
+    },
+    approval_decided: (d) => {
+      addBanner(d.status === "approved" ? "Reviewer approved your claim" : "Reviewer rejected your claim", d.status !== "approved");
+      logActivity(null, `${d.status === "approved" ? "✓ Claim approved" : "✗ Claim rejected"} by ${d.decided_by}`, d.status === "approved" ? "ok" : "err");
+    },
+    claim_submitted: (d) => {
+      if (d.status === "submitted") { logActivity(null, `✓ Claim submitted — ref ${d.reference}`, "ok"); addBanner(`Claim submitted: ${d.reference}`); }
+      else { logActivity(null, "✗ Claim submission failed", "err"); addBanner("Claim submission failed", true); }
+    },
+    session_ended: () => endUi(),
+    error: (d) => addBanner("Error: " + d.message, true),
+  };
+
+  // ---------- session / ws ----------
+  const resetView = () => {
+    if (state.ws) { state.ws.onclose = null; state.ws.close(); }
+    Object.assign(state, { sessionId: null, ws: null, currentAgent: "triage", toolRows: {} });
+    $("transcript").innerHTML = `
+      <div class="empty-hint" id="empty-hint">
+        <div class="big">Hi, I'm your insurance assistant</div>
+        <div>Ask about your policy, billing, network hospitals — or file a claim.<br>
+        Try: “What's my billing status?” — I already know your policies</div>
+      </div>`;
+    $("activity").innerHTML = '<div class="row"><span>Waiting for activity…</span></div>';
+    setAgent("triage");
+    $("session-label").textContent = "no session";
+    $("msg").disabled = false; $("send").style.display = ""; $("end").style.display = "";
+    $("restart").style.display = "none";
+    setConn("warn", "Ready");
+  };
+
+  const connectWs = (sessionId, wsUrl) =>
+    new Promise((resolve) => {
+      const ws = new WebSocket(`${WS_BASE}${wsUrl || `/ws/sessions/${sessionId}`}`);
+      state.ws = ws;
+      ws.onopen = () => resolve(ws);
+      ws.onmessage = (m) => {
+        const event = JSON.parse(m.data);
+        (handlers[event.type] || (() => {}))(event.data || {});
+      };
+      ws.onclose = () => setConn("down", "Disconnected");
+      ws.onerror = () => { setConn("down", "Error"); resolve(null); };
+    });
+
+  // Lazy session creation: a conversation exists only once the user actually
+  // starts one, so the history rail never fills with empty sessions.
+  const ensureSession = async () => {
+    if (state.ws && state.ws.readyState === 1) return;
+    setConn("warn", "Connecting…");
+    const res = await fetch(`${API_BASE}/api/sessions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders() },
+      body: JSON.stringify({ channel: "text", user_id: AUTH?.user_id || "anonymous" }),
+    });
+    if (res.status === 401) {
+      // token expired - force a clean re-login instead of failing silently
+      doLogout();
+      $("login-error").textContent = "Your session expired — please log in again";
+      return;
+    }
+    if (!res.ok) {
+      setConn("down", "Error");
+      addBanner(`Could not start a conversation (HTTP ${res.status})`, true);
+      return;
+    }
+    const body = await res.json();
+    state.sessionId = body.session_id;
+    $("session-label").textContent = "session " + state.sessionId.slice(0, 8);
+    await connectWs(state.sessionId, body.ws_url);
+    await refreshSessions();
+  };
+
+  const send = async () => {
+    if (!AUTH) { applyAuthUi(); return; }
+    const input = $("msg");
+    const text = input.value.trim();
+    if (!text || input.disabled) return;
+    await ensureSession();
+    if (!state.ws || state.ws.readyState !== 1) return;
+    state.ws.send(JSON.stringify({ type: "user_message", data: { content: text } }));
+    input.value = "";
+    refreshSessions();  // keep the sidebar preview fresh
+  };
+  $("send").onclick = send;
+  $("msg").addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+
+  // ---------- voice (ElevenLabs via backend proxy) ----------
+  // Click mic -> record; click again -> stop -> STT -> send through the
+  // normal agent flow; the agent's reply to a spoken turn is spoken back.
+  const speak = async (text) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/voice/tts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) return;
+      const audio = new Audio(URL.createObjectURL(await res.blob()));
+      audio.play();
+    } catch { /* voice is best-effort; the text reply is already visible */ }
+  };
+
+  let recorder = null;
+  $("mic").onclick = async () => {
+    if (!AUTH) { applyAuthUi(); return; }
+    if (recorder && recorder.state === "recording") { recorder.stop(); return; }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      addBanner("Mic needs a secure page — open the app via http://localhost:3000 (not an IP address)", true);
+      return;
+    }
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      const why = {
+        NotAllowedError: "Microphone blocked — click the 🔒/camera icon in the address bar and allow the mic, then reload",
+        NotFoundError: "No microphone found — check that a mic is connected and enabled in Windows sound settings",
+        NotReadableError: "Microphone is busy — another app may be using it",
+      }[err.name] || `Microphone error: ${err.name}`;
+      addBanner(why, true);
+      return;
+    }
+    const chunks = [];
+    recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+    recorder.ondataavailable = (e) => chunks.push(e.data);
+    recorder.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      $("mic").classList.remove("recording");
+      $("mic").classList.add("busy");
+      try {
+        const res = await fetch(`${API_BASE}/api/voice/stt`, {
+          method: "POST",
+          headers: { "Content-Type": "audio/webm" },
+          body: new Blob(chunks, { type: "audio/webm" }),
+        });
+        if (!res.ok) { addBanner("Voice transcription failed", true); return; }
+        const { text } = await res.json();
+        if (!text) { addBanner("Didn't catch that — try again", true); return; }
+        state.speakNextReply = true;
+        $("msg").value = text;
+        await send();
+      } finally {
+        $("mic").classList.remove("busy");
+      }
+    };
+    recorder.start();
+    $("mic").classList.add("recording");
+  };
+
+  // Speaker toggle: when on, every agent reply is spoken via TTS - lets the
+  // ElevenLabs integration be demoed with no microphone available.
+  $("speaker").onclick = () => {
+    state.voiceReplies = !state.voiceReplies;
+    $("speaker").classList.toggle("on", state.voiceReplies);
+    $("speaker").textContent = state.voiceReplies ? "🔊" : "🔇";
+  };
+  $("speaker").textContent = "🔇";
+
+  const endUi = () => {
+    setConn("down", "Ended");
+    $("msg").disabled = true; $("send").style.display = "none"; $("end").style.display = "none";
+    $("restart").style.display = "inline-block";
+    refreshSessions();
+  };
+  $("end").onclick = async () => {
+    if (!state.sessionId) return;
+    if (!confirm("End this call?")) return;
+    await fetch(`${API_BASE}/api/sessions/${state.sessionId}/end`, { method: "POST" });
+  };
+  $("restart").onclick = () => { resetView(); refreshSessions(); };
+  $("new-chat").onclick = () => { resetView(); refreshSessions(); };
+
+  // ---------- history sidebar ----------
+  const refreshSessions = async () => {
+    if (!AUTH) return;
+    const sessions = await fetch(
+      `${API_BASE}/api/sessions?user_id=${encodeURIComponent(AUTH.user_id)}`, { headers: authHeaders() }
+    ).then((r) => r.json());
+    const box = $("session-list");
+    box.innerHTML = "";
+    if (!sessions.length) {
+      box.innerHTML = '<div class="none">No conversations yet</div>';
+      return;
+    }
+    for (const s of sessions) {
+      const item = document.createElement("div");
+      item.className = "sess" + (s.session_id === state.sessionId ? " active" : "");
+      const when = new Date(s.started_at + (s.started_at.endsWith("Z") ? "" : "Z"))
+        .toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+      item.innerHTML = `
+        <div class="preview"></div>
+        <div class="sub"><span>${when}</span><span class="${s.status === "active" ? "live-dot" : ""}">${s.status === "active" ? "● live" : s.status}</span></div>`;
+      item.querySelector(".preview").textContent = s.preview || "New conversation";
+      item.onclick = () => openSession(s);
+      box.appendChild(item);
+    }
+  };
+
+  const openSession = async (s) => {
+    if (s.session_id === state.sessionId) return;
+    resetView();
+    state.sessionId = s.session_id;
+    $("session-label").textContent = "session " + s.session_id.slice(0, 8);
+    setAgent(s.current_agent || "triage");
+
+    // Replay the durable transcript
+    const turns = await fetch(`${API_BASE}/api/sessions/${s.session_id}/turns`).then((r) => r.json());
+    for (const t of turns) addBubble(t.role === "user" ? "user" : "agent", t.agent_name, t.content);
+
+    if (s.status === "pending_approval") {
+      addBanner("⏳ A claim from this conversation is awaiting human review");
+    }
+
+    if (s.status === "active" || s.status === "pending_approval") {
+      await connectWs(s.session_id, null);  // resume live
+    } else {
+      endUi();  // read-only: this conversation is over
+      setConn("down", "Ended");
+    }
+    refreshSessions();
+  };
+
+  $("login-btn").onclick = doLogin;
+  $("login-pass").addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+  $("login-user").addEventListener("keydown", (e) => { if (e.key === "Enter") $("login-pass").focus(); });
+  $("logout").onclick = doLogout;
+
+  resetView();
+  applyAuthUi();
+  refreshSessions();
+})();
+</script>
+</body>
+</html>

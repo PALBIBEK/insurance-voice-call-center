@@ -1,0 +1,44 @@
+[
+    {
+        "tool_name": "calculate_claim_probability",
+        "attempts": 1,
+        "succeeded": 1,
+        "success_rate": 1.0,
+        "avg_latency_ms": "2985.0"
+    },
+    {
+        "tool_name": "get_billing_status",
+        "attempts": 1,
+        "succeeded": 1,
+        "success_rate": 1.0,
+        "avg_latency_ms": "2234.0"
+    },
+    {
+        "tool_name": "get_caller_profile",
+        "attempts": 2,
+        "succeeded": 2,
+        "success_rate": 1.0,
+        "avg_latency_ms": "2461.5"
+    },
+    {
+        "tool_name": "get_claim_status",
+        "attempts": 1,
+        "succeeded": 1,
+        "success_rate": 1.0,
+        "avg_latency_ms": "2861.0"
+    },
+    {
+        "tool_name": "get_hospital_network",
+        "attempts": 1,
+        "succeeded": 1,
+        "success_rate": 1.0,
+        "avg_latency_ms": "2615.0"
+    },
+    {
+        "tool_name": "get_policy_details",
+        "attempts": 1,
+        "succeeded": 1,
+        "success_rate": 1.0,
+        "avg_latency_ms": "2601.0"
+    }
+]

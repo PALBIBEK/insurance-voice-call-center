@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insurance Voice Call Center — High-Level Architecture</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --ink: #1a2233;
+    --muted: #5c6675;
+    --card: #ffffff;
+    --line: #c3cad6;
+    --client: #2f6fed;
+    --voice: #8a3ffc;
+    --api: #0e8a6d;
+    --core: #b3541e;
+    --data: #4a5568;
+    --ext: #a12f5e;
+    --chipbg: #eef1f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151c;
+      --ink: #e8ebf2;
+      --muted: #9aa4b2;
+      --card: #1b2029;
+      --line: #3a4353;
+      --chipbg: #242b38;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 32px 16px 64px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .sub { color: var(--muted); margin-bottom: 28px; font-size: 14px; }
+
+  .lane {
+    position: relative;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    padding: 18px 18px 16px;
+    margin-bottom: 0;
+  }
+  .lane-label {
+    position: absolute; top: -10px; left: 14px;
+    font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; padding: 1px 8px; border-radius: 99px;
+    color: #fff;
+  }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .box {
+    flex: 1 1 220px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: var(--card);
+    min-width: 200px;
+  }
+  .box b { display: block; font-size: 14px; margin-bottom: 2px; }
+  .box span { color: var(--muted); font-size: 12.5px; display: block; }
+  .accent { border-left-width: 5px; }
+
+  .connector {
+    display: flex; justify-content: center; align-items: center;
+    gap: 24px; padding: 6px 0; flex-wrap: wrap;
+  }
+  .arrow {
+    color: var(--muted); font-size: 12.5px; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+  }
+  .arrow .glyph { font-size: 17px; line-height: 1; color: var(--ink); }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .chip {
+    background: var(--chipbg); border: 1px solid var(--line);
+    border-radius: 99px; padding: 2px 10px; font-size: 12px;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    color: var(--ink);
+  }
+
+  .pipeline {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-top: 6px; font-size: 13px;
+  }
+  .stage {
+    border: 1.5px solid var(--core); border-radius: 8px;
+    padding: 3px 10px; background: var(--card); font-weight: 600;
+  }
+  .pipe-arrow { color: var(--muted); font-size: 14px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .legend { margin-top: 30px; }
+  .legend h2 { font-size: 15px; margin-bottom: 8px; }
+  .legend table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  .legend td { padding: 5px 10px 5px 0; vertical-align: top; }
+  .legend td:first-child { white-space: nowrap; font-weight: 600; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Real-Time Autonomous Insurance Call Center</h1>
+  <div class="sub">High-level architecture — voice + web console front ends, one FastAPI brain, multi-agent runtime with HITL approval, dual persistence.</div>
+
+  <!-- ============ CLIENT LAYER ============ -->
+  <div class="lane" style="border-color: var(--client)">
+    <div class="lane-label" style="background: var(--client)">Client</div>
+    <div class="row">
+      <div class="box accent" style="border-left-color: var(--client)">
+        <b>Browser — Voice</b>
+        <span>Caller's mic &amp; speaker. Audio streams to/from ElevenLabs; user just talks.</span>
+      </div>
+      <div class="box accent" style="border-left-color: var(--client)">
+        <b>Browser — Web Console</b>
+        <span>Live transcript, agent rail (who's handling the call), tool activity log, HITL approve/reject cards.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">
+    <div class="arrow"><span class="glyph">⇅</span>audio (WebRTC/WS)</div>
+    <div class="arrow"><span class="glyph">⇅</span>WS /ws/sessions/{id} — live events + approve/reject</div>
+  </div>
+
+  <!-- ============ VOICE LAYER ============ -->
+  <div class="lane" style="border-color: var(--voice)">
+    <div class="lane-label" style="background: var(--voice)">Voice Layer (external)</div>
+    <div class="row">
+      <div class="box accent" style="border-left-color: var(--voice)">
+        <b>ElevenLabs Conversational AI</b>
+        <span>Owns STT, TTS and turn-taking. Does <i>not</i> generate text itself — its <b>Custom-LLM webhook</b> delegates every utterance to our FastAPI service (OpenAI-compatible, SSE streamed back).</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">
+    <div class="arrow"><span class="glyph">↓</span>POST /api/voice/completions&nbsp; (per utterance, SSE stream out)</div>
+  </div>
+
+  <!-- ============ API LAYER ============ -->
+  <div class="lane" style="border-color: var(--api)">
+    <div class="lane-label" style="background: var(--api)">FastAPI Service — “the brain”</div>
+    <div class="box accent" style="border-left-color: var(--api); margin-bottom: 4px;">
+      <b>Web layer (routes only — no logic)</b>
+      <div class="chips">
+        <span class="chip">POST /api/voice/completions</span>
+        <span class="chip">WS /ws/sessions/{id}</span>
+        <span class="chip">REST /api/sessions · /approvals · /claims · /trace</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"><span class="glyph">↓</span>every turn</div></div>
+
+  <!-- ============ CORE SERVICES ============ -->
+  <div class="lane" style="border-color: var(--core)">
+    <div class="lane-label" style="background: var(--core)">Core Services (services/ — all business logic)</div>
+
+    <div class="box accent" style="border-left-color: var(--core); margin-bottom: 14px;">
+      <b>GatewayService — one turn, one pipeline</b>
+      <div class="pipeline">
+        <span class="stage">guardrails</span><span class="pipe-arrow">→</span>
+        <span class="stage">agent turn</span><span class="pipe-arrow">→</span>
+        <span class="stage">persist</span><span class="pipe-arrow">→</span>
+        <span class="stage">publish</span>
+      </div>
+    </div>
+
+    <div class="box accent" style="border-left-color: var(--core); margin-bottom: 14px;">
+      <b>AgentRuntime — first-principles loop (~150 lines, no framework)</b>
+      <div class="pipeline">
+        <span class="stage">Triage</span><span class="pipe-arrow">—handoff→</span>
+        <span class="stage">Policy / Billing</span><span class="pipe-arrow">—handoff→</span>
+        <span class="stage">Claims</span>
+      </div>
+      <span style="margin-top:6px">LLM client seam (anything with <code>chat.completions.create</code>): <b>OpenRouter</b> (real) · <b>scripted fake</b> (tests) · <b>demo rules</b> (zero-key mode)</span>
+    </div>
+
+    <div class="grid2">
+      <div class="box accent" style="border-left-color: var(--core)">
+        <b>ToolRegistry</b>
+        <span>Mock insurance tools with injected 2–3s latency + simulated failures; retry with backoff, then escalation.</span>
+      </div>
+      <div class="box accent" style="border-left-color: var(--core)">
+        <b>ApprovalService (HITL)</b>
+        <span>Human gate — <code>submit_claim</code> executes <i>only</i> after a human approves from the console.</span>
+      </div>
+      <div class="box accent" style="border-left-color: var(--core)">
+        <b>DriftService</b>
+        <span>Watches each turn for hallucinated tools, off-domain replies, and conversation stagnation.</span>
+      </div>
+      <div class="box accent" style="border-left-color: var(--core)">
+        <b>RecordingEventBus</b>
+        <span>Every event fans out to WS subscribers <i>and</i> is recorded as a trace_span row — the custom tracer.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">
+    <div class="arrow"><span class="glyph">↓</span>durable writes</div>
+    <div class="arrow"><span class="glyph">↓</span>hot state + pub/sub</div>
+    <div class="arrow"><span class="glyph">→</span>inference (only with API key)</div>
+  </div>
+
+  <!-- ============ DATA LAYER ============ -->
+  <div class="row" style="margin-bottom:0">
+    <div class="lane" style="border-color: var(--data); flex: 2 1 400px;">
+      <div class="lane-label" style="background: var(--data)">Persistence</div>
+      <div class="row">
+        <div class="box accent" style="border-left-color: var(--data)">
+          <b>Postgres</b>
+          <span>Durable record: sessions, turns, handoffs, tool attempts, claims, approvals, trace spans. (SQLite in tests.)</span>
+        </div>
+        <div class="box accent" style="border-left-color: var(--data)">
+          <b>Redis</b>
+          <span>Hot session state + pub/sub fan-out across workers. In-memory fallback for single-process dev.</span>
+        </div>
+      </div>
+    </div>
+    <div class="lane" style="border-color: var(--ext); flex: 1 1 240px;">
+      <div class="lane-label" style="background: var(--ext)">External LLM</div>
+      <div class="box accent" style="border-left-color: var(--ext)">
+        <b>OpenRouter</b>
+        <span>Model inference via AsyncOpenAI client. Absent a key, the demo brain replaces it — same agents, tools and events.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LEGEND ============ -->
+  <div class="legend">
+    <h2>How to read this</h2>
+    <table>
+      <tr>
+        <td><span class="dot" style="background:var(--voice)"></span>Voice path</td>
+        <td>Caller speaks → ElevenLabs transcribes → webhook POSTs the utterance to <code>/api/voice/completions</code> → the brain runs one agent turn → tokens stream back over SSE → ElevenLabs speaks them.</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--client)"></span>Console path</td>
+        <td>The same turn's events (agent handoffs, tool attempts, approval requests, drift flags) publish through the event bus to the WebSocket, so the console mirrors the call live and can approve/reject claims.</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--core)"></span>One turn</td>
+        <td>Gateway pipeline is strict: guardrails first, then the agent loop (which may call tools / hand off), then <b>persist to Postgres before publishing</b> — so the trace is never ahead of the truth.</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--ext)"></span>Seams</td>
+        <td>The LLM is a swappable seam — real OpenRouter, scripted fake for deterministic tests, or rule-based demo needing zero keys. Same runtime everywhere.</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

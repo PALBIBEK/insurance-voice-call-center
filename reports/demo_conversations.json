@@ -1,0 +1,326 @@
+{
+  "generated_at": "2026-07-12T12:15:47.467957",
+  "user": "Bibek Pal",
+  "conversations": [
+    {
+      "scenario": "C1 coverage question",
+      "conversation_id": "43454f90-7e68-45a6-8621-dbfd8ebc9fac",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "Does my policy cover cashless treatment?",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "Yes, your policy covers both cashless treatment and reimbursement. If you have any other questions or need further information, feel free to ask!",
+          "agent": "policy",
+          "human_approval_status": "none"
+        }
+      ]
+    },
+    {
+      "scenario": "C2 billing status",
+      "conversation_id": "332f55cc-f3d4-40bb-b8a7-40d8fe08b118",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "What's my billing status?",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "Your billing status for policy POL-1001 is that it's paid, with no premium due. The next due date is September 1, 2026.",
+          "agent": "policy",
+          "human_approval_status": "none"
+        }
+      ]
+    },
+    {
+      "scenario": "C3 network hospitals",
+      "conversation_id": "bff623da-4a21-434a-a340-32b6aaaabd60",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "Which cashless hospitals are in my network?",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "In Mumbai, the cashless hospitals in your network are Lilavati Hospital, Kokilaben Hospital, and Fortis Mulund.",
+          "agent": "policy",
+          "human_approval_status": "none"
+        }
+      ]
+    },
+    {
+      "scenario": "C4 claim approved",
+      "conversation_id": "2a9c7267-ca70-4bcf-9eea-469e5a18c6f6",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "I was hospitalized, file a claim for 45000 rupees. I have discharge summary, bills and id proof",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "I see you have a Family Floater Gold plan with policy number POL-1001. You've provided the required documents, and the claim amount is 45,000 rupees. The probability of your claim being accepted is 99%. \n\nWould you like to proceed with submitting the claim?",
+          "agent": "claims",
+          "human_approval_status": "none"
+        },
+        {
+          "role": "User",
+          "message": "submit it",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "Your claim for 45,000 rupees has been queued for human review. You'll be notified once it's processed. If you have any other questions, let me know!",
+          "agent": "claims",
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "User",
+          "message": "What's the status of my claim?",
+          "agent": null,
+          "human_approval_status": "approved"
+        },
+        {
+          "role": "Agent",
+          "message": "Your claim for 45,000 rupees has been approved, and the reference number is CLM-0DAF8654. If you need anything else, feel free to ask!",
+          "agent": "claims",
+          "human_approval_status": "approved"
+        }
+      ]
+    },
+    {
+      "scenario": "C5 claim rejected",
+      "conversation_id": "c00b45c9-e111-40f9-9f40-dd692eb42ed7",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "File a claim for 80000 rupees, documents: discharge summary, bills, id proof",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "I found your policy, Bibek. You want to file a claim for 80,000 rupees and you have the discharge summary, bills, and ID proof ready. The probability of your claim being accepted is 96.8%. \n\nDo you confirm you want to submit this claim?",
+          "agent": "claims",
+          "human_approval_status": "none"
+        },
+        {
+          "role": "User",
+          "message": "submit it",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "Your claim has been queued for human review. If you need help with anything else, feel free to ask!",
+          "agent": "claims",
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "User",
+          "message": "Could you check my claim status?",
+          "agent": null,
+          "human_approval_status": "rejected"
+        },
+        {
+          "role": "Agent",
+          "message": "You have several claims under review. The most recent one for 80,000 rupees has been rejected. If you need help with anything else or want to discuss this further, let me know!",
+          "agent": "claims",
+          "human_approval_status": "rejected"
+        }
+      ]
+    },
+    {
+      "scenario": "C6 claim left pending",
+      "conversation_id": "9156e6b3-927a-4146-a73f-b0480a887edd",
+      "user_id": "Bibek",
+      "final_session_status": "pending_approval",
+      "turns": [
+        {
+          "role": "User",
+          "message": "File a claim for 30000 rupees with discharge summary, bills and id proof",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "I found your policy, Bibek. You're covered under \"Family Floater Gold.\" For your claim of 30,000 rupees, the acceptance probability is 98.1%. \n\nShall we proceed with the claim submission?",
+          "agent": "claims",
+          "human_approval_status": "none"
+        },
+        {
+          "role": "User",
+          "message": "submit it",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "Your claim has been queued for human review. If you have any more questions or need assistance, feel free to ask!",
+          "agent": "claims",
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "User",
+          "message": "Any update on my claim status?",
+          "agent": null,
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "Agent",
+          "message": "Your recent claim for 30,000 rupees is currently pending review. If you have any other questions or need help with something else, just let me know!",
+          "agent": "claims",
+          "human_approval_status": "pending"
+        }
+      ]
+    },
+    {
+      "scenario": "C7 policy question while claim pending",
+      "conversation_id": "44d85660-e32d-4d73-87ba-3fafa893e12a",
+      "user_id": "Bibek",
+      "final_session_status": "pending_approval",
+      "turns": [
+        {
+          "role": "User",
+          "message": "File a claim for 20000 rupees, I have discharge summary, bills and id proof",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "Your policy number is POL-1001, and you're claiming 20,000 rupees. You've provided all the needed documents. The claim acceptance probability is 96.7%. Do you want to submit this claim?",
+          "agent": "claims",
+          "human_approval_status": "none"
+        },
+        {
+          "role": "User",
+          "message": "submit it",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "Your claim has been queued for human review. If you have any other questions or need assistance, just let me know!",
+          "agent": "claims",
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "User",
+          "message": "By the way, what is my sum insured coverage?",
+          "agent": null,
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "Agent",
+          "message": "Your sum insured coverage is 500,000 rupees under your Family Floater Gold plan. Let me know if you have any other questions!",
+          "agent": "policy",
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "User",
+          "message": "And what about my claim?",
+          "agent": null,
+          "human_approval_status": "pending"
+        },
+        {
+          "role": "Agent",
+          "message": "Your recent claim for 20,000 rupees is currently pending review. If there's anything else I can help you with, just let me know!",
+          "agent": "claims",
+          "human_approval_status": "pending"
+        }
+      ]
+    },
+    {
+      "scenario": "C8 cross-conversation claim status",
+      "conversation_id": "2a97c217-dbb9-4b71-a1bb-774cddf08662",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "What happened to the insurance claims I filed earlier?",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "You have a few claims pending right now. Two claims of thirty thousand and twenty thousand are still under review. One claim for eighty thousand was rejected, and another for forty-five thousand has been approved, with the reference number CLM-0DAF8654. Would you like to file a new claim?",
+          "agent": "claims",
+          "human_approval_status": "none"
+        }
+      ]
+    },
+    {
+      "scenario": "C9 off-domain guardrail",
+      "conversation_id": "293385d3-25d6-4d6d-91f2-6da4f74ff7ee",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "What's the weather like in Mumbai today?",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "I can only help with insurance matters - your policy, billing, network hospitals, or claims. What can I help you with there?",
+          "agent": "triage",
+          "human_approval_status": "none"
+        },
+        {
+          "role": "User",
+          "message": "Okay then tell me a good cricket joke instead",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "This seems outside what I can help with. Let me connect you with a human colleague.",
+          "agent": "triage",
+          "human_approval_status": "none"
+        }
+      ]
+    },
+    {
+      "scenario": "C10 other policy lookup (lapsed)",
+      "conversation_id": "d1bfc230-3f53-4e4c-8f13-780f20dad3e6",
+      "user_id": "Bibek",
+      "final_session_status": "active",
+      "turns": [
+        {
+          "role": "User",
+          "message": "Can you give me the details of policy POL-3003? It belongs to my mother.",
+          "agent": null,
+          "human_approval_status": "none"
+        },
+        {
+          "role": "Agent",
+          "message": "The policy number POL-3003 belongs to Meera Iyer. It's a Senior Care plan with a sum insured of 300,000. The coverage type includes both cashless and reimbursement options. However, please note that this policy is currently inactive.",
+          "agent": "policy",
+          "human_approval_status": "none"
+        }
+      ]
+    }
+  ]
+}

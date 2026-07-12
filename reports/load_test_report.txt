@@ -1,0 +1,13 @@
+# Load test against the dockerized stack (docker compose: api+postgres+redis), zero-key demo brain
+# 2026-07-12T12:17Z
+Load test: 2 wave(s) x 30 concurrent sessions -> http://localhost:8000
+Each turn includes one mock tool call with 2-3s injected latency.
+
+wave 1: 30/30 ok | wall 3.97s | p50 3.53s | p95 3.89s | max 3.96s
+wave 2: 30/30 ok | wall 3.84s | p50 3.14s | p95 3.81s | max 3.84s
+
+== SUMMARY ==
+sessions: 60, succeeded: 60, failed: 0
+latency p50=3.39s p95=3.84s max=3.96s
+(fully serialized execution would have taken ~150s of tool latency alone)
+RESULT: PASS - concurrent async tool calls with fixed latency, no blocking, no failures

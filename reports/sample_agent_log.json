@@ -1,0 +1,352 @@
+[
+    {
+        "turn_step": 1,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "Hello",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:25:55.966347+00:00"
+    },
+    {
+        "turn_step": 2,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "triage",
+        "message": "Hi there! How can I assist you with your insurance needs today?",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:25:57.648730+00:00"
+    },
+    {
+        "turn_step": 3,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "I want to check the premium status on my policy POL-1001",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:28:09.635949+00:00"
+    },
+    {
+        "turn_step": 4,
+        "user_id": "Bibek",
+        "step_type": "handoff",
+        "agent_name": "policy",
+        "message": "triage -> policy: checking premium status on policy POL-1001",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:28:11.651072+00:00"
+    },
+    {
+        "turn_step": 5,
+        "user_id": "Bibek",
+        "step_type": "tool_call",
+        "agent_name": null,
+        "message": null,
+        "tool_name": "get_billing_status",
+        "tool_args": {
+            "policy_number": "POL-1001"
+        },
+        "tool_status": "succeeded",
+        "latency_ms": 2234,
+        "created_at": "2026-07-12T10:28:14.789310+00:00"
+    },
+    {
+        "turn_step": 6,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "policy",
+        "message": "Your premium status for policy POL-1001 is paid, with no amount due. The next due date is September 1, 2026. Anything else I can help you with?",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:28:16.158959+00:00"
+    },
+    {
+        "turn_step": 7,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "Is my plan cashless or do I have to pay and claim reimbursement?",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:29:08.846441+00:00"
+    },
+    {
+        "turn_step": 8,
+        "user_id": "Bibek",
+        "step_type": "tool_call",
+        "agent_name": null,
+        "message": null,
+        "tool_name": "get_policy_details",
+        "tool_args": {
+            "policy_number": "POL-1001"
+        },
+        "tool_status": "succeeded",
+        "latency_ms": 2601,
+        "created_at": "2026-07-12T10:29:13.173109+00:00"
+    },
+    {
+        "turn_step": 9,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "policy",
+        "message": "Your plan is a Family Floater Gold, and it offers both cashless and reimbursement options. You can choose whichever method is more convenient for you when accessing healthcare services. Let me know if you need help with anything else!",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:29:14.411219+00:00"
+    },
+    {
+        "turn_step": 10,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "Which hospitals in Mumbai are in the cashless network?",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:29:58.436542+00:00"
+    },
+    {
+        "turn_step": 11,
+        "user_id": "Bibek",
+        "step_type": "tool_call",
+        "agent_name": null,
+        "message": null,
+        "tool_name": "get_hospital_network",
+        "tool_args": {
+            "city": "Mumbai"
+        },
+        "tool_status": "succeeded",
+        "latency_ms": 2615,
+        "created_at": "2026-07-12T10:30:02.704002+00:00"
+    },
+    {
+        "turn_step": 12,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "policy",
+        "message": "In Mumbai, the cashless network hospitals include Lilavati Hospital, Kokilaben Hospital, and Fortis Mulund. If you have any more questions, feel free to ask!",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:30:04.256247+00:00"
+    },
+    {
+        "turn_step": 13,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "My wife was admitted to Lilavati Hospital last week for surgery. I need to file a claim.",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:30:47.613120+00:00"
+    },
+    {
+        "turn_step": 14,
+        "user_id": "Bibek",
+        "step_type": "handoff",
+        "agent_name": "claims",
+        "message": "policy -> claims: Filing a claim for hospitalization at Lilavati Hospital.",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:30:51.310263+00:00"
+    },
+    {
+        "turn_step": 15,
+        "user_id": "Bibek",
+        "step_type": "tool_call",
+        "agent_name": null,
+        "message": null,
+        "tool_name": "get_caller_profile",
+        "tool_args": {},
+        "tool_status": "succeeded",
+        "latency_ms": 2399,
+        "created_at": "2026-07-12T10:30:54.399586+00:00"
+    },
+    {
+        "turn_step": 16,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "claims",
+        "message": "I'll help you with that! Can you please tell me the claim amount for the hospital expenses?",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:30:55.432661+00:00"
+    },
+    {
+        "turn_step": 17,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "The total bill was 1 lakh 20 thousand rupees.",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:31:39.128764+00:00"
+    },
+    {
+        "turn_step": 18,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "claims",
+        "message": "Great! Now, I\u2019ll need the required documents: the discharge summary, bills, and an ID proof. Do you have those ready?",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:31:40.772501+00:00"
+    },
+    {
+        "turn_step": 19,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "I have the discharge summary and the bills ready.",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:33:07.656080+00:00"
+    },
+    {
+        "turn_step": 20,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "claims",
+        "message": "Could you please provide the ID proof as well? It's one of the required documents for the claim.",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:33:10.039337+00:00"
+    },
+    {
+        "turn_step": 21,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "I also have my Aadhaar card as ID proof, add that.",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:34:22.583582+00:00"
+    },
+    {
+        "turn_step": 22,
+        "user_id": "Bibek",
+        "step_type": "tool_call",
+        "agent_name": null,
+        "message": null,
+        "tool_name": "calculate_claim_probability",
+        "tool_args": {
+            "policy_number": "POL-1001",
+            "claim_amount": 120000,
+            "documents": [
+                "discharge_summary",
+                "bills",
+                "id_proof"
+            ]
+        },
+        "tool_status": "succeeded",
+        "latency_ms": 2985,
+        "created_at": "2026-07-12T10:34:28.687743+00:00"
+    },
+    {
+        "turn_step": 23,
+        "user_id": "Bibek",
+        "step_type": "approval_requested",
+        "agent_name": null,
+        "message": "{'policy_number': 'POL-1001', 'claim_amount': 120000.0, 'documents': ['discharge_summary', 'bills', 'id_proof'], 'probability': 0.97}",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:34:30.584668+00:00"
+    },
+    {
+        "turn_step": 24,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "claims",
+        "message": "Your claim has been successfully queued for human review. You will be notified once it has been processed. If you have any more questions or need further assistance, feel free to ask!",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:34:31.701732+00:00"
+    },
+    {
+        "turn_step": 25,
+        "user_id": "Bibek",
+        "step_type": "approval_decided",
+        "agent_name": null,
+        "message": "rejected by reviewer@console",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:34:46.864750+00:00"
+    },
+    {
+        "turn_step": 26,
+        "user_id": "Bibek",
+        "step_type": "user_message",
+        "agent_name": null,
+        "message": "Could you give me claim status?",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:35:10.230546+00:00"
+    },
+    {
+        "turn_step": 27,
+        "user_id": "Bibek",
+        "step_type": "tool_call",
+        "agent_name": null,
+        "message": null,
+        "tool_name": "get_claim_status",
+        "tool_args": {},
+        "tool_status": "succeeded",
+        "latency_ms": 2861,
+        "created_at": "2026-07-12T10:35:16.118802+00:00"
+    },
+    {
+        "turn_step": 28,
+        "user_id": "Bibek",
+        "step_type": "agent_message",
+        "agent_name": "claims",
+        "message": "The claim you filed for the amount of 1 lakh 20 thousand rupees has been rejected. If you'd like to discuss the reasons or need assistance with any other issues, please let me know!",
+        "tool_name": null,
+        "tool_args": null,
+        "tool_status": null,
+        "latency_ms": null,
+        "created_at": "2026-07-12T10:35:17.465139+00:00"
+    }
+]

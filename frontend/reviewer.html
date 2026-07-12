@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reviewer Console</title>
+<style>
+  :root {
+    --bg:             #F6F7F8;
+    --surface:        #FFFFFF;
+    --surface-sunken: #F1F2F4;
+    --border:         #E3E5E8;
+    --text:           #26282B;
+    --text-muted:     #8A8F98;
+    --accent:         #3A6FF7;
+    --accent-soft:    #EAF0FE;
+    --success:        #2FA86B;
+    --success-soft:   #E7F5EE;
+    --warning:        #D79A1F;
+    --warning-soft:   #FAF3E2;
+    --danger:         #E0554A;
+    --danger-soft:    #FCEBEA;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Inter, sans-serif;
+    font-size: 15px; line-height: 1.5;
+    background: var(--bg); color: var(--text);
+    height: 100vh; display: flex; flex-direction: column;
+  }
+
+  /* ---- top bar ---- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  header .brand { font-weight: 600; }
+  header .meta { display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 13px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    background: var(--surface-sunken); color: var(--text-muted);
+  }
+  .pill.live { background: var(--success-soft); color: var(--success); }
+  .pill.warn { background: var(--warning-soft); color: var(--warning); }
+  .pill.down { background: var(--danger-soft); color: var(--danger); }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* ---- layout ---- */
+  main { flex: 1; display: flex; gap: 16px; padding: 16px 24px; min-height: 0; max-width: 1100px; width: 100%; margin: 0 auto; }
+  .queue-col { flex: 1.7; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; gap: 14px; }
+  .log-col { flex: 1; min-width: 260px; max-width: 360px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px;
+  }
+  .card h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 12px; }
+
+  /* ---- pending approval cards ---- */
+  .approval {
+    border: 1.5px solid var(--accent); box-shadow: 0 8px 30px rgba(58,111,247,.12);
+    animation: slidein .3s ease;
+  }
+  @keyframes slidein { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .approval .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .approval .head .title { font-weight: 600; }
+  .approval .head .when { font-size: 12px; color: var(--text-muted); }
+  .approval .req { font-size: 13.5px; margin-bottom: 10px; }
+  .approval .req b { font-weight: 600; }
+  .kv { display: flex; justify-content: space-between; font-size: 13.5px; padding: 3px 0; }
+  .kv .k { color: var(--text-muted); }
+  .prob-bar { height: 8px; border-radius: 999px; background: var(--surface-sunken); margin: 8px 0 14px; overflow: hidden; }
+  .prob-bar .fill { height: 100%; border-radius: 999px; transition: width .4s ease; }
+  .btn {
+    border: none; border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .btn.approve { background: var(--accent); color: #fff; }
+  .btn.reject { background: transparent; color: var(--danger); border: 1.5px solid var(--danger); }
+  .btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+
+  /* ---- empty state ---- */
+  .empty {
+    margin: auto; text-align: center; color: var(--text-muted); padding: 60px 20px;
+  }
+  .empty .big { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+
+  /* ---- decisions log ---- */
+  #decisions { display: flex; flex-direction: column; gap: 6px; max-height: 70vh; overflow-y: auto; font-size: 13px; }
+  #decisions .row { display: flex; gap: 8px; color: var(--text-muted); }
+  #decisions .row .t { flex-shrink: 0; font-variant-numeric: tabular-nums; opacity: .7; }
+  #decisions .row.ok { color: var(--success); }
+  #decisions .row.err { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="brand">Reviewer Console — Claim Approvals</span>
+  <div class="meta">
+    <span class="pill" id="count-pill"><span id="count-text">0 pending</span></span>
+    <span class="pill warn" id="conn-pill"><span class="dot"></span><span id="conn-text">Connecting…</span></span>
+  </div>
+</header>
+
+<main>
+  <div class="queue-col" id="queue">
+    <div class="empty" id="empty">
+      <div class="big">No approvals waiting</div>
+      <div>When a caller submits a claim on the user console,<br>it appears here for your decision.</div>
+    </div>
+  </div>
+
+  <div class="log-col">
+    <div class="card">
+      <h3>Recent decisions</h3>
+      <div id="decisions"><div class="row"><span>No decisions yet</span></div></div>
+    </div>
+  </div>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const API_BASE =
+    new URLSearchParams(location.search).get("api") ||
+    (location.port === "8000" ? location.origin : `${location.protocol}//${location.hostname}:8000`);
+
+  const POLL_MS = 2000;
+  const BASE_TITLE = "Reviewer Console";
+  const rendered = {};   // approval_id -> card element
+  const deciding = new Set();
+
+  const setConn = (cls, text) => {
+    $("conn-pill").className = "pill " + cls;
+    $("conn-text").textContent = text;
+  };
+  const timeNow = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+  const logDecision = (text, cls, when = timeNow()) => {
+    const box = $("decisions");
+    if (box.firstChild?.textContent?.startsWith("No decisions")) box.innerHTML = "";
+    const row = document.createElement("div");
+    row.className = "row " + cls;
+    row.innerHTML = `<span class="t">${when}</span><span class="m"></span>`;
+    row.querySelector(".m").textContent = text;
+    box.prepend(row);
+  };
+
+  // Durable decision history from the DB, so the portal reflects every past
+  // approval task even after a tab or backend restart.
+  const loadDecidedHistory = async () => {
+    let decided;
+    try {
+      decided = await fetch(`${API_BASE}/api/approvals?status=decided`).then((r) => r.json());
+    } catch { return; }
+    for (const d of decided) {  // API returns oldest first; prepend keeps newest on top
+      const when = d.decided_at
+        ? new Date(d.decided_at + (d.decided_at.endsWith("Z") || d.decided_at.includes("+") ? "" : "Z"))
+            .toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+        : "";
+      const ref = d.submitted_reference ? ` → ${d.submitted_reference}` : "";
+      logDecision(
+        `${d.status === "approved" ? "✓ Approved" : "✗ Rejected"} #${d.approval_id} — ${d.requested_by}, ` +
+        `${d.claim_draft.policy_number}, ₹ ${Number(d.claim_draft.claim_amount).toLocaleString()} ` +
+        `(by ${d.decided_by || "?"})${ref}`,
+        d.status === "approved" ? "ok" : "err",
+        when
+      );
+    }
+  };
+
+  const decide = async (item, decision, card) => {
+    if (deciding.has(item.approval_id)) return;
+    deciding.add(item.approval_id);
+    card.querySelectorAll(".btn").forEach((b) => (b.disabled = true));
+    try {
+      const res = await fetch(`${API_BASE}/api/approvals/${item.approval_id}/decision`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decision, decided_by: "reviewer@console" }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      logDecision(
+        `${decision === "approved" ? "✓ Approved" : "✗ Rejected"} #${item.approval_id} — ${item.claim_draft.policy_number}, ₹ ${Number(item.claim_draft.claim_amount).toLocaleString()}`,
+        decision === "approved" ? "ok" : "err"
+      );
+      card.remove();
+      delete rendered[item.approval_id];
+      updateCount();
+    } catch (err) {
+      logDecision(`Could not decide #${item.approval_id}: ${err.message}`, "err");
+      card.querySelectorAll(".btn").forEach((b) => (b.disabled = false));
+    } finally {
+      deciding.delete(item.approval_id);
+    }
+  };
+
+  const renderCard = (item) => {
+    const draft = item.claim_draft || {};
+    const p = item.probability_score;
+    const pct = p != null ? Math.round(p * 100) : null;
+    const barColor = pct >= 65 ? "var(--success)" : pct >= 35 ? "var(--warning)" : "var(--danger)";
+    const when = item.created_at
+      ? new Date(item.created_at + (item.created_at.endsWith("Z") || item.created_at.includes("+") ? "" : "Z"))
+          .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      : "";
+
+    const card = document.createElement("div");
+    card.className = "card approval";
+    card.innerHTML = `
+      <div class="head">
+        <span class="title">Claim approval #${item.approval_id}</span>
+        <span class="when">conversation ${(item.session_id || "").slice(0, 8)} · ${when}</span>
+      </div>
+      <div class="req"></div>
+      <div class="kv"><span class="k">Policy</span><span class="v-policy"></span></div>
+      <div class="kv"><span class="k">Amount</span><span class="v-amount"></span></div>
+      <div class="kv"><span class="k">Documents</span><span class="v-docs"></span></div>
+      <div class="kv"><span class="k">Acceptance probability</span><span class="v-prob"></span></div>
+      <div class="prob-bar"><div class="fill"></div></div>
+      <div class="btn-row">
+        <button class="btn reject">Reject</button>
+        <button class="btn approve">Approve</button>
+      </div>`;
+    const who = item.requested_by || item.user_id || "A caller";
+    const amount = draft.claim_amount != null ? `₹ ${Number(draft.claim_amount).toLocaleString()}` : "a";
+    const reqEl = card.querySelector(".req");
+    reqEl.innerHTML = `<b></b> is waiting on your decision for a <b>${amount}</b> claim on <b>${draft.policy_number || "?"}</b>.`;
+    reqEl.querySelector("b").textContent = who;
+    card.querySelector(".v-policy").textContent = draft.policy_number || "—";
+    card.querySelector(".v-amount").textContent =
+      draft.claim_amount != null ? `₹ ${Number(draft.claim_amount).toLocaleString()}` : "—";
+    card.querySelector(".v-docs").textContent =
+      (draft.documents || []).map((x) => x.replaceAll("_", " ")).join(", ") || "none";
+    card.querySelector(".v-prob").textContent = pct != null ? pct + "%" : "n/a";
+    const fill = card.querySelector(".fill");
+    fill.style.width = (pct ?? 0) + "%";
+    fill.style.background = barColor;
+    card.querySelector(".approve").onclick = () => decide(item, "approved", card);
+    card.querySelector(".reject").onclick = () => decide(item, "rejected", card);
+    return card;
+  };
+
+  const updateCount = () => {
+    const n = Object.keys(rendered).length;
+    $("count-text").textContent = `${n} pending`;
+    $("count-pill").className = "pill" + (n > 0 ? " warn" : "");
+    document.title = n > 0 ? `(${n}) ${BASE_TITLE}` : BASE_TITLE;
+    $("empty").style.display = n > 0 ? "none" : "";
+  };
+
+  const poll = async () => {
+    let items;
+    try {
+      const res = await fetch(`${API_BASE}/api/approvals?status=pending`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      items = await res.json();
+      setConn("live", "Live");
+    } catch {
+      setConn("down", "Backend offline");
+      return;
+    }
+    const seen = new Set();
+    for (const item of items) {
+      seen.add(item.approval_id);
+      if (!rendered[item.approval_id]) {
+        const card = renderCard(item);
+        rendered[item.approval_id] = card;
+        $("queue").appendChild(card);
+      }
+    }
+    // decided elsewhere (or expired) - drop stale cards
+    for (const id of Object.keys(rendered)) {
+      if (!seen.has(Number(id)) && !deciding.has(Number(id))) {
+        rendered[id].remove();
+        delete rendered[id];
+      }
+    }
+    updateCount();
+  };
+
+  loadDecidedHistory();
+  poll();
+  setInterval(poll, POLL_MS);
+})();
+</script>
+</body>
+</html>

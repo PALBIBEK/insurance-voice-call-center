@@ -1,0 +1,14 @@
+REAL-LLM RUN: OpenRouter gpt-4o-mini (triage + specialist), anonymous sessions, throwaway DB.
+Each session = ~3-4 real LLM calls + one 2-3s mock tool call. Compare load_test_report.txt (keyless demo brain).
+
+Load test: 2 wave(s) x 30 concurrent sessions -> http://localhost:8321
+Each turn includes one mock tool call with 2-3s injected latency.
+
+wave 1: 30/30 ok | wall 7.98s | p50 6.24s | p95 7.00s | max 7.97s
+wave 2: 30/30 ok | wall 6.64s | p50 5.92s | p95 6.55s | max 6.63s
+
+== SUMMARY ==
+sessions: 60, succeeded: 60, failed: 0
+latency p50=6.10s p95=6.73s max=7.97s
+(fully serialized execution would have taken ~150s of tool latency alone)
+RESULT: PASS - concurrent async tool calls with fixed latency, no blocking, no failures

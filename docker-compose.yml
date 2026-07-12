@@ -1,0 +1,61 @@
+services:
+  # The UI: a separate client process. Serves static files only and talks to
+  # the api service purely over its REST/WS API from the browser.
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend/index.html:/usr/share/nginx/html/index.html:ro
+      - ./frontend/reviewer.html:/usr/share/nginx/html/reviewer.html:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    healthcheck:
+      # python:*-slim has no curl; urlopen raises (non-zero exit) on any non-2xx.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    environment:
+      IVCC_DATABASE_URL: postgresql+asyncpg://ivcc:ivcc@postgres:5432/ivcc
+      IVCC_REDIS_URL: redis://redis:6379/0
+      # Leave empty to run the zero-key rule-based demo brain.
+      # Set a real key to route inference through OpenRouter.
+      IVCC_OPENROUTER_API_KEY: ${IVCC_OPENROUTER_API_KEY:-}
+      IVCC_OPENROUTER_MODEL_TRIAGE: ${IVCC_OPENROUTER_MODEL_TRIAGE:-openai/gpt-4o-mini}
+      IVCC_OPENROUTER_MODEL_SPECIALIST: ${IVCC_OPENROUTER_MODEL_SPECIALIST:-openai/gpt-4o}
+      IVCC_ELEVENLABS_API_KEY: ${IVCC_ELEVENLABS_API_KEY:-}
+      IVCC_VOICE_WEBHOOK_SECRET: ${IVCC_VOICE_WEBHOOK_SECRET:-}
+      IVCC_TOOL_FAILURE_RATE: ${IVCC_TOOL_FAILURE_RATE:-0.0}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ivcc
+      POSTGRES_PASSWORD: ivcc
+      POSTGRES_DB: ivcc
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ivcc"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+
+volumes:
+  pgdata:

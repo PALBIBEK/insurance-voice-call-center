@@ -1,0 +1,477 @@
+[
+    {
+        "span_id": "21a30636-05f4-44c0-9cb5-412d8a8fb1ab",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "Hello"
+        },
+        "created_at": "2026-07-12T10:25:55.958941+00:00"
+    },
+    {
+        "span_id": "7312bd5f-136c-4735-b6d6-b47ac1fe967e",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "triage",
+            "content": "Hi there! How can I assist you with your insurance needs today?"
+        },
+        "created_at": "2026-07-12T10:25:57.645090+00:00"
+    },
+    {
+        "span_id": "c69bdc21-f41f-4eca-a408-a74f9f258416",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "I want to check the premium status on my policy POL-1001"
+        },
+        "created_at": "2026-07-12T10:28:09.633256+00:00"
+    },
+    {
+        "span_id": "d1224cd2-8f53-4281-a2ec-afab78b95b24",
+        "parent_span_id": null,
+        "kind": "handoff",
+        "payload": {
+            "event": "agent_handoff",
+            "from_agent": "triage",
+            "to_agent": "policy",
+            "reason": "checking premium status on policy POL-1001"
+        },
+        "created_at": "2026-07-12T10:28:11.648279+00:00"
+    },
+    {
+        "span_id": "7c527d3e-c133-4b4f-b48a-a53a79e720d2",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_started",
+            "tool_name": "get_billing_status",
+            "invocation_id": "inv-1",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "policy_number": "POL-1001"
+            },
+            "attempt": 1
+        },
+        "created_at": "2026-07-12T10:28:12.548889+00:00"
+    },
+    {
+        "span_id": "408e61c6-dc18-4013-987a-b62357d8e901",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_succeeded",
+            "tool_name": "get_billing_status",
+            "invocation_id": "inv-1",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "policy_number": "POL-1001"
+            },
+            "attempt": 1,
+            "latency_ms": 2234
+        },
+        "created_at": "2026-07-12T10:28:14.784176+00:00"
+    },
+    {
+        "span_id": "22df04ca-ca79-4034-8b70-90a77152a280",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "policy",
+            "content": "Your premium status for policy POL-1001 is paid, with no amount due. The next due date is September 1, 2026. Anything else I can help you with?"
+        },
+        "created_at": "2026-07-12T10:28:16.157111+00:00"
+    },
+    {
+        "span_id": "af71d25a-cb82-4466-80f3-cf1c242a2f9b",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "Is my plan cashless or do I have to pay and claim reimbursement?"
+        },
+        "created_at": "2026-07-12T10:29:08.844365+00:00"
+    },
+    {
+        "span_id": "6e14a6c8-43d8-48fc-b63c-0b5b7995b129",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_started",
+            "tool_name": "get_policy_details",
+            "invocation_id": "inv-2",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "policy_number": "POL-1001"
+            },
+            "attempt": 1
+        },
+        "created_at": "2026-07-12T10:29:10.565068+00:00"
+    },
+    {
+        "span_id": "03f0b0a1-8a7d-46e1-b7e4-257028647d28",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_succeeded",
+            "tool_name": "get_policy_details",
+            "invocation_id": "inv-2",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "policy_number": "POL-1001"
+            },
+            "attempt": 1,
+            "latency_ms": 2601
+        },
+        "created_at": "2026-07-12T10:29:13.168023+00:00"
+    },
+    {
+        "span_id": "fca5380e-126e-42b8-9f7e-ba49ee5a6858",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "policy",
+            "content": "Your plan is a Family Floater Gold, and it offers both cashless and reimbursement options. You can choose whichever method is more convenient for you when accessing healthcare services. Let me know if you need help with anything else!"
+        },
+        "created_at": "2026-07-12T10:29:14.409598+00:00"
+    },
+    {
+        "span_id": "a58c513d-c22c-4a1c-9174-fc9c1a67e8e1",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "Which hospitals in Mumbai are in the cashless network?"
+        },
+        "created_at": "2026-07-12T10:29:58.434384+00:00"
+    },
+    {
+        "span_id": "b7453287-cf4a-4f9b-b129-059b76e01c2e",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_started",
+            "tool_name": "get_hospital_network",
+            "invocation_id": "inv-3",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "city": "Mumbai"
+            },
+            "attempt": 1
+        },
+        "created_at": "2026-07-12T10:30:00.083764+00:00"
+    },
+    {
+        "span_id": "213dbafd-2d5e-4707-9b25-bdcb10f5e21c",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_succeeded",
+            "tool_name": "get_hospital_network",
+            "invocation_id": "inv-3",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "city": "Mumbai"
+            },
+            "attempt": 1,
+            "latency_ms": 2615
+        },
+        "created_at": "2026-07-12T10:30:02.700221+00:00"
+    },
+    {
+        "span_id": "8ac6479e-6d94-4391-a09f-cbcad6a66368",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "policy",
+            "content": "In Mumbai, the cashless network hospitals include Lilavati Hospital, Kokilaben Hospital, and Fortis Mulund. If you have any more questions, feel free to ask!"
+        },
+        "created_at": "2026-07-12T10:30:04.253895+00:00"
+    },
+    {
+        "span_id": "dd745979-89e7-42c0-8ed4-d4fb04f4b55d",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "My wife was admitted to Lilavati Hospital last week for surgery. I need to file a claim."
+        },
+        "created_at": "2026-07-12T10:30:47.609674+00:00"
+    },
+    {
+        "span_id": "2457227f-ae3d-42f0-9b32-2f1b7ad39e44",
+        "parent_span_id": null,
+        "kind": "handoff",
+        "payload": {
+            "event": "agent_handoff",
+            "from_agent": "policy",
+            "to_agent": "claims",
+            "reason": "Filing a claim for hospitalization at Lilavati Hospital."
+        },
+        "created_at": "2026-07-12T10:30:51.306766+00:00"
+    },
+    {
+        "span_id": "8e5a2c2e-0701-46cb-867f-8c3a9507ff4d",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_started",
+            "tool_name": "get_caller_profile",
+            "invocation_id": "inv-4",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {},
+            "attempt": 1
+        },
+        "created_at": "2026-07-12T10:30:51.995722+00:00"
+    },
+    {
+        "span_id": "9d2bec3a-2f86-4e7b-8728-418d938fc233",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_succeeded",
+            "tool_name": "get_caller_profile",
+            "invocation_id": "inv-4",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {},
+            "attempt": 1,
+            "latency_ms": 2399
+        },
+        "created_at": "2026-07-12T10:30:54.396264+00:00"
+    },
+    {
+        "span_id": "8c8d5ce2-5128-4c08-93f2-cff288348851",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "claims",
+            "content": "I'll help you with that! Can you please tell me the claim amount for the hospital expenses?"
+        },
+        "created_at": "2026-07-12T10:30:55.414374+00:00"
+    },
+    {
+        "span_id": "029ea533-1726-44f8-8250-97a1765bad2d",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "The total bill was 1 lakh 20 thousand rupees."
+        },
+        "created_at": "2026-07-12T10:31:39.124398+00:00"
+    },
+    {
+        "span_id": "64bfc8b8-7c47-4b38-8ac4-b596889eb157",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "claims",
+            "content": "Great! Now, I\u2019ll need the required documents: the discharge summary, bills, and an ID proof. Do you have those ready?"
+        },
+        "created_at": "2026-07-12T10:31:40.771241+00:00"
+    },
+    {
+        "span_id": "cad00f26-a64a-4080-9c74-0278bf44d8ef",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "I have the discharge summary and the bills ready."
+        },
+        "created_at": "2026-07-12T10:33:07.653232+00:00"
+    },
+    {
+        "span_id": "6a274618-16ea-4405-b141-10621db18998",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "claims",
+            "content": "Could you please provide the ID proof as well? It's one of the required documents for the claim."
+        },
+        "created_at": "2026-07-12T10:33:10.037084+00:00"
+    },
+    {
+        "span_id": "37df8e01-8315-41ab-965b-47f11f5001b6",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "I also have my Aadhaar card as ID proof, add that."
+        },
+        "created_at": "2026-07-12T10:34:22.580588+00:00"
+    },
+    {
+        "span_id": "3f7d2755-6897-44a6-8395-d0ffe7e814d1",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_started",
+            "tool_name": "calculate_claim_probability",
+            "invocation_id": "inv-5",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "policy_number": "POL-1001",
+                "claim_amount": 120000,
+                "documents": [
+                    "discharge_summary",
+                    "bills",
+                    "id_proof"
+                ]
+            },
+            "attempt": 1
+        },
+        "created_at": "2026-07-12T10:34:25.696019+00:00"
+    },
+    {
+        "span_id": "d577499f-ed6a-4898-8e15-de9c8075b393",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_succeeded",
+            "tool_name": "calculate_claim_probability",
+            "invocation_id": "inv-5",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {
+                "policy_number": "POL-1001",
+                "claim_amount": 120000,
+                "documents": [
+                    "discharge_summary",
+                    "bills",
+                    "id_proof"
+                ]
+            },
+            "attempt": 1,
+            "latency_ms": 2985
+        },
+        "created_at": "2026-07-12T10:34:28.683038+00:00"
+    },
+    {
+        "span_id": "540cff70-c305-4ac8-87e3-06a18a046b42",
+        "parent_span_id": null,
+        "kind": "hitl",
+        "payload": {
+            "event": "approval_required",
+            "approval_id": 1,
+            "claim_draft": {
+                "policy_number": "POL-1001",
+                "claim_amount": 120000.0,
+                "documents": [
+                    "discharge_summary",
+                    "bills",
+                    "id_proof"
+                ],
+                "probability": 0.97
+            },
+            "probability_score": 0.97
+        },
+        "created_at": "2026-07-12T10:34:30.583399+00:00"
+    },
+    {
+        "span_id": "4809a6fc-3d7a-4ee7-a68c-70261b60cbde",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "claims",
+            "content": "Your claim has been successfully queued for human review. You will be notified once it has been processed. If you have any more questions or need further assistance, feel free to ask!"
+        },
+        "created_at": "2026-07-12T10:34:31.699902+00:00"
+    },
+    {
+        "span_id": "7f332972-769b-4799-b8d8-6fb453ea8149",
+        "parent_span_id": null,
+        "kind": "hitl",
+        "payload": {
+            "event": "approval_decided",
+            "approval_id": 1,
+            "status": "rejected",
+            "decided_by": "reviewer@console"
+        },
+        "created_at": "2026-07-12T10:34:46.862396+00:00"
+    },
+    {
+        "span_id": "56c41498-95a4-4fac-ab9f-603e6bf89529",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "user",
+            "agent_name": null,
+            "content": "Could you give me claim status?"
+        },
+        "created_at": "2026-07-12T10:35:10.227909+00:00"
+    },
+    {
+        "span_id": "db8083c5-7d88-4dd4-8852-fe71f5b3feac",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_started",
+            "tool_name": "get_claim_status",
+            "invocation_id": "inv-6",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {},
+            "attempt": 1
+        },
+        "created_at": "2026-07-12T10:35:13.255449+00:00"
+    },
+    {
+        "span_id": "8023b09c-2672-43b5-8cd7-0c93de7ba366",
+        "parent_span_id": null,
+        "kind": "tool_call",
+        "payload": {
+            "event": "tool_call_succeeded",
+            "tool_name": "get_claim_status",
+            "invocation_id": "inv-6",
+            "session_id": "a26dbb4b-09f3-4934-823a-41177abfb891",
+            "arguments": {},
+            "attempt": 1,
+            "latency_ms": 2861
+        },
+        "created_at": "2026-07-12T10:35:16.116137+00:00"
+    },
+    {
+        "span_id": "8de06bee-220f-44d9-8ea9-c7b5034e47e0",
+        "parent_span_id": null,
+        "kind": "agent_run",
+        "payload": {
+            "event": "turn_created",
+            "role": "agent",
+            "agent_name": "claims",
+            "content": "The claim you filed for the amount of 1 lakh 20 thousand rupees has been rejected. If you'd like to discuss the reasons or need assistance with any other issues, please let me know!"
+        },
+        "created_at": "2026-07-12T10:35:17.463607+00:00"
+    }
+]

@@ -1,0 +1,85 @@
+Take-Home Assignment: Real-Time
+Autonomous Insurance Call Center
+Context & Objective
+Your task is to build a highly reliable, real-time voice-capable multi-agent system for an
+insurance company. This system acts as an automated call center that can triage policy
+inquiries, assist with document gathering, predict claim acceptance probabilities, and process
+claim submissions.
+We are assessing your ability to build production-grade agentic microservices. We care deeply
+about system reliability, state management, latency (specifically for voice), and how your
+architecture handles concurrency and tool failures.
+System Requirements
+1. Tech Stack & Framework Constraints
+● Language: Python.
+● Orchestration Framework: You may use any framework or build from first principles,
+except LangGraph. LangGraph is strictly prohibited. The openai-agents SDK is
+highly recommended as a lightweight alternative, but you are free to evaluate and use
+what you believe fits best. We want to see how you adapt to or design orchestration
+layers outside of the most common default.
+● Architecture: Wrap the agent execution environment in a robust microservice (e.g.,
+FastAPI).
+● AI Pair Programming: You are actively encouraged to use Cursor, ChatGPT, Claude,
+or any other AI assistant to build this. However, you must export and provide your
+complete chat/prompt logs as part of your final deliverable. We want to see how you
+debug, design, and collaborate with AI.
+2. Real-Time Voice & API Integrations
+The bot must feel natural, conversational, and real-time.
+● Voice Integration: You are expected to use ElevenLabs for real-time voice
+capabilities (e.g., utilizing their Conversational AI Websocket APIs or Speech Engine).
+● LLM Routing: You are expected to use OpenRouter for model inference.
+● API Keys & Budget: Do not use your own paid accounts. Reply to this
+email/message to request your OpenRouter and ElevenLabs API keys. You have
+a strict $30 budget limit across both platforms for the duration of this assignment.
+Your system should be optimized to not burn through tokens unnecessarily.
+3. Multi-Agent Orchestration & State
+You must implement a multi-agent architecture using robust handoff patterns. At a minimum, the
+system should demonstrate:
+● Triage Agent: Routes the user to the correct specialist via voice.
+● Policy/Billing Agent: Answers questions about cashless vs. reimbursement, hospital
+chains, and billing status.
+● Claims Agent: Guides the user through gathering documents, generates a "claim
+acceptance probability score," and prepares the final submission.
+● Human-In-The-Loop (HITL): The system must pause the voice loop and wait for
+explicit human approval (via a simple frontend/CLI interaction) before a final claim
+submission is executed.
+4. Mock APIs & Tool Boundaries
+You will simulate external systems using mock tools.
+● Implement mock API functions for external actions (e.g., get_billing_status,
+calculate_claim_probability, submit_claim).
+● Crucial: Inject a fixed latency (e.g., 2–3 seconds) into these mock tools. Your
+orchestration layer must handle these latencies asynchronously without blocking the
+voice websocket or causing the audio to hang unnaturally.
+● Demonstrate robust error handling for tool failures (e.g., how does the voice agent
+recover if the submit_claim mock API throws a 500 error?).
+5. Observability, Logging, & Drift Detection
+● Implement tracing for all agent runs, tool calls, and handoffs. We expect to see how
+you track an entire session's execution flow.
+● Log state transitions clearly.
+● Implement a lightweight mechanism to detect "drift" (e.g., the agent hallucinating a
+tool, deviating from the strict insurance domain, or getting stuck in an infinite
+conversational loop).
+6. Evaluation & Load Testing
+You must provide a test suite that proves your system works reliably under load and evaluates
+its accuracy.
+● Deterministic Testing: Write tests asserting that specific user intents trigger the
+correct tool calls and multi-agent handoffs.
+● Load Testing: Provide a script (e.g., using Locust, pytest-asyncio, or a custom script)
+that fires concurrent requests at your microservice via mock API calls. The goal is to
+prove your system handles concurrent async tool-calls with fixed latency without
+crashing or exhausting connection pools.
+Deliverables
+1. Code Repository: Clean, well-documented Python code.
+2. Containerization: A docker-compose.yml (or equivalent) that spins up the
+microservice(s), including any required transient state stores (e.g., Redis/Postgres for
+session memory) and a lightweight frontend to interact with the system.
+3. AI Assistant Logs: Exported HTML, JSON, or Markdown files of your conversations
+with Cursor/ChatGPT/Claude used to build this project.
+4. Documentation (README.md):
+○ System architecture diagram.
+○ Instructions on how to run the application, load tests, and evaluations.
+○ A brief write-up analyzing the orchestration patterns you used, why you
+chose your specific framework (or custom solution) over LangGraph, and
+how you managed the websocket state for real-time voice.
+5. Test Reports: The output logs/reports from your Load Test suite.
+Time Expectation: We anticipate this taking 2–3 days of focused work. We are looking for
+quality, asynchronous safety, and robust engineering over hacky prototypes.
