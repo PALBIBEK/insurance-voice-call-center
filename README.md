@@ -49,6 +49,14 @@ docker compose up --build -d   # frontend + api + postgres + redis
   `I have my discharge summary, bills and id proof` → `submit it` — approve or
   reject on the reviewer console and watch the gated submission return live.
 
+**Demo data.** The seeded caller `Bibek` (Bibek Pal, Mumbai) owns policy
+`POL-1001` — Family Floater Gold, ₹5,00,000 sum insured, cashless +
+reimbursement, premium paid (next due 2026-09-01), required claim documents:
+discharge summary, bills, id proof. The caller profile lives in the `user_info`
+table (seeded at startup); policy/billing/hospital records live behind the mock
+external-system tools — other fixtures to try: `POL-2002` (₹8,450 due),
+`POL-3003` (lapsed), hospital networks for Mumbai / Delhi / Bangalore.
+
 **Real keys:** copy `.env.example` → `.env` in the repo root and set
 `IVCC_OPENROUTER_API_KEY` (inference) and `IVCC_ELEVENLABS_API_KEY` (voice).
 For full duplex voice, point an ElevenLabs Conversational AI agent's Custom LLM
